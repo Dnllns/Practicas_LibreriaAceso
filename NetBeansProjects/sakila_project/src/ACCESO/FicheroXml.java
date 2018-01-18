@@ -45,7 +45,7 @@ import org.xml.sax.SAXException;
  */
 public class FicheroXml extends Fichero {
 
-    private final Document docXML;
+    private static Document docXML;
 
     public FicheroXml(String filePath) {
         super(filePath);
@@ -63,6 +63,7 @@ public class FicheroXml extends Fichero {
 
     }
 
+ 
 //------Principales Metodos-----------------------------------------------------------
 //------------------------------------------------------------------------------------
     /**
@@ -115,7 +116,7 @@ public class FicheroXml extends Fichero {
      * @return
      * @throws XPathExpressionException
      */
-    public ArrayList<String> getElementValuesByXpath(String xpath) throws XPathExpressionException {
+    public ArrayList<String> getElementValuesByXpath(String xpath) {
 
         NodeList n = leerListaNodos(xpath);
         ArrayList<String> x = new ArrayList<>();
@@ -135,7 +136,7 @@ public class FicheroXml extends Fichero {
      * @return
      * @throws XPathExpressionException
      */
-    public ArrayList<String> getAtributesByXpath(String xpath, String atributo) throws XPathExpressionException {
+    public ArrayList<String> getAtributesByXpath(String xpath, String atributo) {
         NodeList n = leerListaNodos(xpath);
         ArrayList<String> x = new ArrayList<>();
         for (int i = 0; i < n.getLength(); i++) {
@@ -226,7 +227,7 @@ public class FicheroXml extends Fichero {
      * @param valor
      * @return
      */
-    public Element crearElemento(String name, String valor) {
+    public static Element crearElemento(String name, String valor) {
         Element e = docXML.createElement(name);
         Text t = docXML.createTextNode(valor);
         e.appendChild(t);
@@ -238,7 +239,7 @@ public class FicheroXml extends Fichero {
      * @param name
      * @return
      */
-    public Element crearElemento(String name) {
+    public static Element crearElemento(String name) {
         return docXML.createElement(name);
     }
 
@@ -248,7 +249,7 @@ public class FicheroXml extends Fichero {
      * @param valor
      * @return
      */
-    public Attr crearAtributo(String nombre, String valor) {
+    public static Attr crearAtributo(String nombre, String valor) {
         Document d = docXML;
         Attr atrib = d.createAttribute(nombre);
         atrib.setValue(valor);
@@ -346,8 +347,15 @@ public class FicheroXml extends Fichero {
 
 //------------Metodos Elvira---------------------------------------------------
 //-----------------------------------------------------------------------------    
-    public String leerString(String strXPath) throws XPathExpressionException {
-        return (String) (XPathFactory.newInstance().newXPath().evaluate(strXPath, docXML, XPathConstants.STRING));
+    public String leerString(String strXPath) {
+    	String s = null;
+		try {
+			s = (String) (XPathFactory.newInstance().newXPath().evaluate(strXPath, docXML, XPathConstants.STRING));
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return s;
     }
 
     public Element leerNodo(String strXPath) {
@@ -359,8 +367,15 @@ public class FicheroXml extends Fichero {
         }
     }
 
-    public NodeList leerListaNodos(String strXPath) throws XPathExpressionException {
-        return (NodeList) (XPathFactory.newInstance().newXPath().evaluate(strXPath, docXML, XPathConstants.NODESET));
+    public NodeList leerListaNodos(String strXPath) {
+    	NodeList list = null;
+		try {
+			list = (NodeList) (XPathFactory.newInstance().newXPath().evaluate(strXPath, docXML, XPathConstants.NODESET));
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return list;
     }
 
 }

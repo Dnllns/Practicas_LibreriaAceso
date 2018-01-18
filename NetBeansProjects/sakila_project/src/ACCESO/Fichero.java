@@ -14,11 +14,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 
@@ -111,6 +110,27 @@ public class Fichero {
     
     
     }
+    
+    public boolean writeInfo2(String info) {
+   	 boolean correcto;
+    
+        try {
+	        	
+	            //Creamos fichero para escribir en modo texto
+	            PrintWriter writer = new PrintWriter(new FileWriter(filePath.toString()));
+	            //Escribimos la info
+	            writer.println(info);
+	            //Cerramos el fichero
+	            writer.close();
+	            correcto = true;
+	        	
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            correcto = false;
+	        }
+		return correcto;
+   
+   }
     
     
     
