@@ -1,5 +1,6 @@
 
 import ACCESO.Directorio;
+import ACCESO.Fichero;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -20,8 +21,10 @@ public class MAIN {
     public static void main(String[] args) {
         // TODO code application logic here
         
-        Directorio d = new Directorio("/home/n1tr0/Escritorio/Pruebas");
-        d.cortar("/home/n1tr0/Escritorio/Pruebas2");
+        Fichero f = new Fichero("C:\\Users\\Enrique\\Desktop\\aa2");
+        f.crearFichero();
+        f.cortar("C:\\Users\\Enrique\\Desktop\\aaa2");
+        
         int a = 0;
     }
     

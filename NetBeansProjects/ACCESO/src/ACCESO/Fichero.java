@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 public class Fichero {
 
     private Path filePath;
     private Boolean existe;
 
+    /**
+     * Constructor
+     *
+     * @param filePath
+     */
     public Fichero(String filePath) {
 
         this.filePath = Paths.get(filePath);
@@ -18,58 +22,58 @@ public class Fichero {
 
     }
 
-    public boolean crearFichero() {
-        
-        boolean resultado = false;
+    /**
+     * Crea un fichero si no existe
+     */
+    public void crearFichero() {
+
         if (!existe()) {
             try {
                 Files.createFile(filePath);
             } catch (IOException ex) {
-                ex.getMessage();
             }
-            resultado = true;
-        } else {
-            System.out.println("El fichero ya existe");
-            resultado = false;
         }
-        return resultado;
     }
 
-    public boolean eliminarFichero() {
-        
+    /**
+     * Elimina el fichero
+     */
+    public void eliminarFichero() {
         try {
             this.filePath.toFile().delete();
-            return true;
         } catch (Exception x) {
-            return false;
         }
     }
 
+    /**
+     * Copia el fichero a la nueva ruta
+     *
+     * @param nuevaRuta
+     */
     public void copiar(String nuevaRuta) {
-        
         Fichero nuevo = new Fichero(nuevaRuta);
-        if (!Files.isDirectory(nuevo.getFilePath())) {
-            if (!nuevo.existe) {
-                nuevo.crearFichero();
-            }
+        if (!nuevo.existe) {
             try {
-                Files.copy(this.getFilePath(), nuevo.getFilePath(), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(
+                        this.getFilePath(),
+                        nuevo.getFilePath()
+                );
             } catch (IOException ex) {
             }
-        } else {
-            System.out.print(nuevaRuta + " Es un directorio");
         }
     }
 
+    /**
+     * Corta el fichero a la nueva ruta
+     * @param nuevaRuta 
+     */
     public void cortar(String nuevaRuta) {
-        
         Fichero nuevo = new Fichero(nuevaRuta);
-        if (nuevo.existe) {
-            nuevo.eliminarFichero();
+        if (!nuevo.existe) {
+            this.copiar(nuevaRuta);
+            this.eliminarFichero();
+            this.filePath = Paths.get(nuevaRuta);
         }
-        this.copiar(nuevaRuta);
-        this.eliminarFichero();
-        this.filePath = Paths.get(nuevaRuta);
     }
 
     public Path getFilePath() {
