@@ -28,6 +28,9 @@ public class Directorio {
         ficherosInternos = new ArrayList<Fichero>();
     }
 
+    /**
+     * Crea el directorio si no existe
+     */
     public void crearDirectorio() {
         if (!existe) {
             try {
@@ -35,81 +38,87 @@ public class Directorio {
             } catch (IOException ex) {
                 ex.getMessage();
             }
-        } else {
-            System.out.println("Ese directorio ya existe");
-        }
-    }
-
-    public void eliminar() {
-        if (existe) {
-            for (File f : ruta.toFile().listFiles()) {
-                f.delete();
-            }
-            ruta.toFile().delete();
         }
     }
 
     /**
-     * Copia un directorio y su contenido a la ruta pasada por parametro
+     * Elimina un directorio y su contenido
+     */
+    public void eliminar() {
+        if (existe) {
+            for (File f : ruta.toFile().listFiles()) {
+                if (f.isDirectory()) {
+                    Directorio d = new Directorio(f.getAbsolutePath().toString());
+                    d.eliminar();
+                } else {
+                    f.delete();
+                }
+            }
+            ruta.toFile().delete();
+            limpiar();
+        }
+    }
+
+    /**
+     * Copia un directorio y su contenido a la ruta pasada por parametro Si el
+     * directorio de destino no existe
      *
      * @param nuevaRuta
      */
     public void copiar(String nuevaRuta) {
-        Directorio destino = new Directorio(nuevaRuta);
-        if (!destino.existe) {
-            destino.crearDirectorio();
-        }
-        String[] ficheros = ruta.toFile().list();
-        for (int x = 0; x < ficheros.length; x++) { //Contenido del directorio
-            File f = new File(ruta + System.getProperty("file.separator") + ficheros[x]);
-            if (f.isDirectory()) { //Copiar directorio
-                Directorio original = new Directorio(f.getAbsolutePath());
-                Directorio copia = new Directorio(destino.ruta + System.getProperty("file.separator") + f.getName());
-                original.copiar(copia.ruta.toString());
-            } else {    //Copiar fichero
-                try {
-                    Files.copy(
-                            Paths.get(f.getAbsolutePath()),
-                            Paths.get(destino.ruta.toString() + System.getProperty("file.separator") + f.getName())
-                    );
-                } catch (IOException ex) {
+        Directorio directorioDestino = new Directorio(nuevaRuta);
+        if (!directorioDestino.existe) {
+            directorioDestino.crearDirectorio();
+            String[] contenidoDirectorio = ruta.toFile().list();
+            for (int i = 0; i < contenidoDirectorio.length; i++) { //Contenido del directorio
+                File ficheroHijo = new File(ruta + System.getProperty("file.separator") + contenidoDirectorio[i]);
+                if (ficheroHijo.isDirectory()) { //Copiar directorio
+                    Directorio directorioOriginal = new Directorio(ficheroHijo.getAbsolutePath());
+                    Directorio nuevoDirectorio = new Directorio(directorioDestino.ruta + System.getProperty("file.separator") + ficheroHijo.getName());
+                    directorioOriginal.copiar(nuevoDirectorio.ruta.toString());
+                } else {    //Copiar fichero
+                    try {
+                        Files.copy(Paths.get(ficheroHijo.getAbsolutePath()),
+                                Paths.get(directorioDestino.ruta.toString() + System.getProperty("file.separator") + ficheroHijo.getName())
+                        );
+                    } catch (IOException ex) {
+                    }
                 }
             }
         }
     }
 
-    public boolean renombrar(String nombre) {
-        boolean resultado = false;
+    /**
+     * Renombra el directorio
+     * @param nuevoNombre 
+     */
+    public void renombrar(String nuevoNombre) {
         try {
-            ruta = Files.move(ruta, ruta.resolveSibling(nombre));
-
+            ruta = Files.move(ruta, ruta.resolveSibling(nuevoNombre));
+            nombre = ruta.getFileName().toString();
         } catch (IOException ex) {
             ex.getMessage();
         }
-        String nombreDirectorio = ruta.getFileName().toString();
-        if (nombreDirectorio.equals(nombre)) {
-            resultado = true;
-        }
-        return resultado;
     }
 
     /**
-     * Corta un directorio y su contenido a la ruta pasada por parametro, si no existe esta
-     * @param nuevaRuta 
+     * Corta un directorio y su contenido a la ruta pasada por parametro, si no
+     * existe esta
+     *
+     * @param nuevaRuta
      */
     public void cortar(String nuevaRuta) {
 
         Path nueva = Paths.get(nuevaRuta);
-        if (!nueva.toFile().exists()) { // Controlar si existe la nueva ruta
-            if (Files.isDirectory(nueva.getParent())) {
-                try {
-                    Files.move(ruta, nueva);
-                    ruta = Paths.get(nueva.toString());
-                } catch (IOException ex) {
-                    ex.getMessage();
-                }
+        if (!nueva.toFile().exists()) { // El path de la nueva ruta esta libre
+            try {
+                Files.move(ruta, nueva);
+                ruta = Paths.get(nueva.toString());
+            } catch (IOException ex) {
+                ex.getMessage();
             }
         }
+        actualizar(nuevaRuta);
     }
 
     /**
@@ -132,5 +141,19 @@ public class Directorio {
             }
         }
 
+    }
+
+    
+    private void limpiar() {
+        ruta = null;
+        nombre = null;
+        existe = false;
+        directoriosInternos = null;
+        ficherosInternos = null;
+    }
+    
+    private void actualizar(String ruta){
+        this.ruta = Paths.get(ruta);
+        nombre = this.ruta.getFileName().toString();
     }
 }
