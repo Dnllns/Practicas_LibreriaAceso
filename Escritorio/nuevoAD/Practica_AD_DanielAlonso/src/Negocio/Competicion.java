@@ -33,6 +33,30 @@ public class Competicion {
     }
 
     
+        /**
+     * Carga los equipos que participan en esta competicion en el arraylist de
+     * participantes
+     */
+    public void cargarParticipantes() {
+        participantes = new ArrayList();
+        Statement consulta;
+        ConexionBD conex = ConexionBD.getBD();
+        String instruccion = "select * from competicion_equipo where cod_competicion = " + id;
+        try {
+            consulta = conex.getConexion().createStatement();
+            ResultSet respuesta = consulta.executeQuery(instruccion);
+            while (respuesta.next()) {
+                int codEquipo = Integer.parseInt(respuesta.getString("cod_equipo"));
+                Equipo e = new Equipo(codEquipo);
+                participantes.add(e);
+            }
+        } catch (NumberFormatException | SQLException e) {
+        }
+    }
+    
+    //METODOS ESTANDAR
+    //-------------------------------------------
+    
     /**
      * Inserta en la bd la competicion
      */
@@ -80,26 +104,7 @@ public class Competicion {
         }
     }
 
-    /**
-     * Carga los equipos que participan en esta competicion en el arraylist de
-     * participantes
-     */
-    public void cargarParticipantes() {
-        participantes = new ArrayList();
-        Statement consulta;
-        ConexionBD conex = ConexionBD.getBD();
-        String instruccion = "select * from competicion_equipo where cod_competicion = " + id;
-        try {
-            consulta = conex.getConexion().createStatement();
-            ResultSet respuesta = consulta.executeQuery(instruccion);
-            while (respuesta.next()) {
-                int codEquipo = Integer.parseInt(respuesta.getString("cod_equipo"));
-                Equipo e = new Equipo(codEquipo);
-                participantes.add(e);
-            }
-        } catch (NumberFormatException | SQLException e) {
-        }
-    }
+
 
     /**
      * Modifica el regitro correspondiente al id

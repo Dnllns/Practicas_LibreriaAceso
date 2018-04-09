@@ -25,22 +25,51 @@ public class Ciudad {
     private String nombre;
     private ArrayList<Equipo> equipos;
 
-    public Ciudad() {
-    }
-
+    //Constructor de BD
     public Ciudad(int id) {
         this.id = id;
     }
 
+    //Constructor de creado desde el programa
     public Ciudad(String nombre) {
         this.nombre = nombre;
     }
 
+    //Constructor completo
     public Ciudad(int id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
 
+    
+    /*
+    Busca en la base de datos los equipos que son de esta ciudady los carga
+    en el arraylist de equipos
+     */
+    public void cargarEquipos() {
+        equipos = new ArrayList();
+        Statement consulta;
+        ConexionBD conex = ConexionBD.getBD();
+        String instruccion = "select * from equipo where cod_ciudad = " + id;
+        try {
+            consulta = conex.getConexion().createStatement();
+            ResultSet respuesta = consulta.executeQuery(instruccion);
+            while (respuesta.next()) {
+                int idEquipo = respuesta.getInt("id");
+                Equipo e = new Equipo(idEquipo);
+                equipos.add(e);
+            }
+            consulta.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Ciudad.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    
+    //METODOS ESTANDAR
+    //-------------------------------------------
+    
+    
     /*
     Insterta la ciudad en la bd
      */
@@ -79,29 +108,6 @@ public class Ciudad {
             ResultSet respuesta = consulta.executeQuery(instruccion);
             if (respuesta.next()) {
                 this.nombre = respuesta.getString("nombre");
-            }
-            consulta.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(Ciudad.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /*
-    Busca en la base de datos los equipos que son de esta ciudady los carga
-    en el arraylist de equipos
-     */
-    public void cargarEquipos() {
-        equipos = new ArrayList();
-        Statement consulta;
-        ConexionBD conex = ConexionBD.getBD();
-        String instruccion = "select * from equipo where cod_ciudad = " + id;
-        try {
-            consulta = conex.getConexion().createStatement();
-            ResultSet respuesta = consulta.executeQuery(instruccion);
-            while (respuesta.next()) {
-                int idEquipo = respuesta.getInt("id");
-                Equipo e = new Equipo(idEquipo);
-                equipos.add(e);
             }
             consulta.close();
         } catch (SQLException ex) {

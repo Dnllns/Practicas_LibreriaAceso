@@ -25,12 +25,16 @@ public class Equipo {
     private ArrayList<Competicion> competiciones;
     private Ciudad ciudad;
 
-    //ID ultimo entrenador dado de alta en la base de datos
-    //select cod_entrenador from equipo_entrenador where cod_equipo = 1 and temporada = (select max(temporada) from equipo_entrenador where cod_equipo = 1);
     public Equipo(int id) {
         this.id = id;
     }
 
+    /**
+     * Inserta en la base de datos la asociacion entre este equipo y una
+     * competicion
+     *
+     * @param idCompeticion
+     */
     public void insertarCompeticion(int idCompeticion) {
 
         String instruccion = "INSERT INTO competicion_equipo VALUES "
@@ -80,7 +84,7 @@ public class Equipo {
      *
      * @return
      */
-    public Entrenador getEntrenadorActual() {
+    public Entrenador getEntrenadorActualBD() {
 
         Entrenador e = null;
         Statement consulta;
@@ -104,8 +108,29 @@ public class Equipo {
 
     }
 
- 
+    /**
+     * Metodo que devuelbe el entrenador con la temporada mas alta
+     * @return 
+     */
+    public Entrenador getEntrenadorActual() {
+        
+        Entrenador eActual = null;
+        if (!entrenadores.isEmpty()) {
+            int maxTemp = 0;
+            for (EntrenadorTemporada et : entrenadores) {
+                if (et.getTemporada() > maxTemp) {
+                    maxTemp = et.getTemporada();
+                    eActual = et.getEntrenador();
+                }
+            }
+        }
+        return eActual;
+    }
 
+    //METODOS ESTANDAR
+    //-------------------------------------------
+    
+    
     /**
      * Inserta el equipo en la base de datos
      */
