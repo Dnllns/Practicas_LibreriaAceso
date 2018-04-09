@@ -6,9 +6,6 @@
 package Interface;
 
 import Acceso.ConexionBD;
-import Negocio.Ciudad;
-import Negocio.Competicion;
-import Negocio.Entrenador;
 import Negocio.Equipo;
 
 /**
@@ -22,11 +19,14 @@ public class Main {
      */
     public static void main(String[] args) {
         ConexionBD.getBD().abrirConexion();
+        
+        
+        
 
         Equipo e = new Equipo(1);
         e.cargar();
         e.cargarEntrenadores();
-        e.insertarCompeticion(
+       
 
         int i = 0;
 

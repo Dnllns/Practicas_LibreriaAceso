@@ -20,13 +20,16 @@ public class ConexionBD {
 
     }
 
-    //Metodo de acceso para la capa de negocio
+
+    /**
+     * Metodo de acceso a la BD para la capa de negocio
+     * @return 
+     */
     public static ConexionBD getBD() {
+        
         if (BD == null) {
-            
-            //BD = abrirConexion();
-            ConexionBD bd = new ConexionBD();
-            if (bd.validarConexion()) {
+            ConexionBD bd = new ConexionBD();            
+            if (bd.registrarDriver()) {
                 BD = bd;
             } else {
                 System.out.println("Conexion Incorrecta");
@@ -39,7 +42,7 @@ public class ConexionBD {
     public Connection getConexion() {
         return conexion;
     }
-    
+
     /**
      * Metodo que intenta conectar con la base de datos
      *
@@ -59,7 +62,6 @@ public class ConexionBD {
         return resultado;
     }
 
-
     /**
      * Cerrar conexion con BBDD
      */
@@ -69,20 +71,6 @@ public class ConexionBD {
             conexion.close();
         } catch (SQLException ex) {
             System.out.println(ex.getLocalizedMessage());
-        }
-    }
-
-    /**
-     * Metodo que comprueba si la conexion es correcta
-     *
-     * @return true, false
-     */
-    private boolean validarConexion() {
-
-        if (registrarDriver()) {
-            return abrirConexion();
-        } else {
-            return false;
         }
     }
 
